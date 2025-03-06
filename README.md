@@ -86,16 +86,6 @@ Bir seçenek girerek ilgili işlemi gerçekleştirebilirsiniz.
   - `hl7MesajiOlustur()`: HL7 mesajı oluşturur.
   - `hl7MesajiDosyayaKaydet()`: HL7 mesajını dosyaya kaydeder.
 
-## Katkıda Bulunma
-
-Katkıda bulunmak istiyorsanız, lütfen önce neyi değiştirmek istediğinizi tartışmak için bir sorun açın.
-
-1. Fork yapın (<https://github.com/kullanici_adi/hastane-yonetim-sistemi/fork>)
-2. Özelliğinizi oluşturun (`git checkout -b ozellik/AmazingFeature`)
-3. Değişikliklerinizi commit yapın (`git commit -m 'Add some AmazingFeature'`)
-4. Branch'e push yapın (`git push origin ozellik/AmazingFeature`)
-5. Bir Pull Request açın
-
 ## Lisans
 
 Bu proje MIT Lisansı ile lisanslanmıştır - detaylar için `LICENSE` dosyasına bakın.
