@@ -9,7 +9,6 @@ Bu proje, bir hastane yönetim sistemini simüle eden bir C programıdır. Bu si
 - [Kurulum](#kurulum)
 - [Kullanım](#kullanım)
 - [Yapı](#yapı)
-- [Katkıda Bulunma](#katkıda-bulunma)
 - [Lisans](#lisans)
 
 ## Başlangıç
