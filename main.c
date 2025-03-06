@@ -19,10 +19,10 @@ typedef struct {
 } Hasta;
 
 // Bagli Liste Elemani
-typedef struct Nodo {
+typedef struct Node {
     Hasta hasta;
-    struct Nodo* sonraki;
-} Nodo;
+    struct Node* sonraki;
+} Node;
 
 // Ilac Bilgileri Yapisi
 typedef struct {
@@ -32,10 +32,10 @@ typedef struct {
 } Recete;
 
 // Ilac Bilgileri Bagli Liste Elemani
-typedef struct ReceteNodo {
+typedef struct ReceteNode {
     Recete recete;
-    struct ReceteNodo* sonraki;
-} ReceteNodo;
+    struct ReceteNode* sonraki;
+} ReceteNode;
 
 // Fonksiyon Prototipleri
 void hastaEkle();
@@ -58,11 +58,11 @@ void hl7MesajiDosyayaKaydet(const char* mesaj);
 void freeReceteNo(char* receteNo);
 
 // Global Degiskenler
-Nodo* hastaBas = NULL;
-ReceteNodo* receteBas = NULL;
-Nodo* randevuKuyrugu = NULL;
-Nodo* randevuSon = NULL;
-Nodo* taburcuListeBas = NULL;
+Node* hastaBas = NULL;
+ReceteNode* receteBas = NULL;
+Node* randevuKuyrugu = NULL;
+Node* randevuSon = NULL;
+Node* taburcuListeBas = NULL;
 int siraNo = 0;
 
 int main() {
@@ -134,8 +134,8 @@ void menuGoster() {
 
 void hastaEkle() {
     Hasta hasta;
-    Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
-    if (yeniNodo == NULL) {
+    Node* yeniNode = (Node*)malloc(sizeof(Node));
+    if (yeniNode == NULL) {
         printf("Bellek tahsisi basarisiz oldu.\n");
         return;
     }
@@ -155,9 +155,9 @@ void hastaEkle() {
     
     printf("Sira No: %d\n", siraNo);
 
-    yeniNodo->hasta = hasta;
-    yeniNodo->sonraki = hastaBas;
-    hastaBas = yeniNodo;
+    yeniNode->hasta = hasta;
+    yeniNode->sonraki = hastaBas;
+    hastaBas = yeniNode;
 
     hl7MesajiOlustur(hasta, "Hasta Ekle");
     kayitlariDosyayaKaydet();
@@ -165,7 +165,7 @@ void hastaEkle() {
 }
 
 void tumHastalariGoruntule() {
-    Nodo* temp = hastaBas;
+    Node* temp = hastaBas;
     if (temp == NULL) {
         printf("Kayitli hasta bulunmamaktadir.\n");
         return;
@@ -179,7 +179,7 @@ void tumHastalariGoruntule() {
 void hastaDurumuGuncelle() {
     int id = hastaIdAl();
     char yeniDurum[100];
-    Nodo* temp = hastaBas;
+    Node* temp = hastaBas;
 
     printf("Yeni Durum: ");
     getchar(); // Önceki yeni satır karakterini temizle
@@ -201,8 +201,8 @@ void hastaDurumuGuncelle() {
 
 void receteOlustur() {
     Recete recete;
-    ReceteNodo* yeniNodo = (ReceteNodo*)malloc(sizeof(ReceteNodo));
-    if (yeniNodo == NULL) {
+    ReceteNode* yeniNode = (ReceteNode*)malloc(sizeof(ReceteNode));
+    if (yeniNode == NULL) {
         printf("Bellek tahsisi basarisiz oldu.\n");
         return;
     }
@@ -214,9 +214,9 @@ void receteOlustur() {
     printf("Doz: ");
     scanf("%19s", recete.doz); // Güvenli giriş
 
-    yeniNodo->recete = recete;
-    yeniNodo->sonraki = receteBas;
-    receteBas = yeniNodo;
+    yeniNode->recete = recete;
+    yeniNode->sonraki = receteBas;
+    receteBas = yeniNode;
 
     char* receteNo = receteNoUret();
     printf("\nRecete olusturuldu. Recete No: %s\n", receteNo);
@@ -224,7 +224,7 @@ void receteOlustur() {
 }
 
 void tumReceteleriGoruntule() {
-    ReceteNodo* temp = receteBas;
+    ReceteNode* temp = receteBas;
     if (temp == NULL) {
         printf("Kayitli recete bulunmamaktadir.\n");
         return;
@@ -237,7 +237,7 @@ void tumReceteleriGoruntule() {
 
 void randevuOlustur() {
     int hastaId = hastaIdAl();
-    Nodo* hasta = hastaBas;
+    Node* hasta = hastaBas;
 
     while (hasta != NULL && hasta->hasta.id != hastaId) {
         hasta = hasta->sonraki;
@@ -248,30 +248,30 @@ void randevuOlustur() {
         return;
     }
 
-    Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
-    if (yeniNodo == NULL) {
+    Node* yeniNode = (Node*)malloc(sizeof(Node));
+    if (yeniNode == NULL) {
         printf("Bellek tahsisi basarisiz oldu.\n");
         return;
     }
 
-    yeniNodo->hasta = hasta->hasta;
-    yeniNodo->sonraki = NULL;
+    yeniNode->hasta = hasta->hasta;
+    yeniNode->sonraki = NULL;
 
     if (hasta->hasta.oncelik == 1) {
         // Acil hastalar öne alınır
-        yeniNodo->sonraki = randevuKuyrugu;
-        randevuKuyrugu = yeniNodo;
+        yeniNode->sonraki = randevuKuyrugu;
+        randevuKuyrugu = yeniNode;
         if (randevuSon == NULL) {
-            randevuSon = yeniNodo;
+            randevuSon = yeniNode;
         }
     } else {
         // Normal hastalar kuyruğun sonuna eklenir
         if (randevuSon == NULL) {
-            randevuKuyrugu = yeniNodo;
-            randevuSon = yeniNodo;
+            randevuKuyrugu = yeniNode;
+            randevuSon = yeniNode;
         } else {
-            randevuSon->sonraki = yeniNodo;
-            randevuSon = yeniNodo;
+            randevuSon->sonraki = yeniNode;
+            randevuSon = yeniNode;
         }
     }
 
@@ -285,7 +285,7 @@ void siradakiHasta() {
         return;
     }
 
-    Nodo* temp = randevuKuyrugu;
+    Node* temp = randevuKuyrugu;
     printf("Siradaki Hasta - ID: %d, Ad: %s, Soyad: %s, Durum: %s, Oncelik: %s\n", temp->hasta.id, temp->hasta.ad, temp->hasta.soyad, temp->hasta.durum, temp->hasta.oncelik ? "Acil" : "Normal");
     randevuKuyrugu = randevuKuyrugu->sonraki;
     free(temp);
@@ -297,7 +297,7 @@ void siradakiHasta() {
 
 void hastayiTaburcuEt() {
     int id = hastaIdAl();
-    Nodo *temp = hastaBas, *onceki = NULL;
+    Node *temp = hastaBas, *onceki = NULL;
 
     while (temp != NULL && temp->hasta.id != id) {
         onceki = temp;
@@ -402,7 +402,7 @@ void kayitlariDosyayaKaydet() {
         return;
     }
 
-    Nodo* temp = hastaBas;
+    Node* temp = hastaBas;
     while (temp != NULL) {
         fprintf(dosya, "ID: %d, Ad: %s, Soyad: %s, Durum: %s, Oncelik: %s\n", 
                 temp->hasta.id, temp->hasta.ad, temp->hasta.soyad, temp->hasta.durum, 
@@ -423,15 +423,15 @@ void kayitlariDosyadanOku() {
     Hasta hasta;
     while (fscanf(dosya, "ID: %d, Ad: %49s, Soyad: %49s, Durum: %99[^\n], Oncelik: %49s\n",
                   &hasta.id, hasta.ad, hasta.soyad, hasta.durum, hasta.oncelik ? "Acil" : "Normal") != EOF) {
-        Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
-        if (yeniNodo == NULL) {
+        Node* yeniNode = (Node*)malloc(sizeof(Node));
+        if (yeniNode == NULL) {
             printf("Bellek tahsisi basarisiz oldu.\n");
             fclose(dosya);
             return;
         }
-        yeniNodo->hasta = hasta;
-        yeniNodo->sonraki = hastaBas;
-        hastaBas = yeniNodo;
+        yeniNode->hasta = hasta;
+        yeniNode->sonraki = hastaBas;
+        hastaBas = yeniNode;
     }
     fclose(dosya);
 }
