@@ -5,9 +5,8 @@
 
 // Baslik
 void baslikGoster() {
-    printf("**************************************\n");
-    printf("*       Hastane Yonetim Sistemi      *\n");
-    printf("**************************************\n\n");
+    printf("-       Hastane Yonetim Sistemi      -\n");
+    printf("--------------------------------------\n\n");
 }
 
 // Hasta Bilgileri Yapisi
