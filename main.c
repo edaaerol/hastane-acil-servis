@@ -52,6 +52,10 @@ char* receteNoUret();
 void hl7MesajiOlustur(Hasta hasta, const char* islem);
 int oncelikSor();
 int siraNoUret();
+void kayitlariDosyayaKaydet();
+void kayitlariDosyadanOku();
+void hl7MesajiDosyayaKaydet(const char* mesaj);
+void freeReceteNo(char* receteNo);
 
 // Global Degiskenler
 Nodo* hastaBas = NULL;
@@ -59,16 +63,22 @@ ReceteNodo* receteBas = NULL;
 Nodo* randevuKuyrugu = NULL;
 Nodo* randevuSon = NULL;
 Nodo* taburcuListeBas = NULL;
+int siraNo = 0;
 
 int main() {
     int secim;
 
     baslikGoster();
+    kayitlariDosyadanOku();
 
     while (1) {
         menuGoster();
         printf("Bir secenek girin: ");
-        scanf("%d", &secim);
+        if (scanf("%d", &secim) != 1) {
+            printf("Gecersiz giris! Lutfen bir sayi girin.\n");
+            while (getchar() != '\n'); // Hatali girisi temizlemek icin buffer'i temizle
+            continue;
+        }
 
         printf("\n");
 
@@ -125,15 +135,21 @@ void menuGoster() {
 void hastaEkle() {
     Hasta hasta;
     Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
+    if (yeniNodo == NULL) {
+        printf("Bellek tahsisi basarisiz oldu.\n");
+        return;
+    }
 
     printf("Hasta ID: ");
     scanf("%d", &hasta.id);
     printf("Hasta Adi: ");
-    scanf("%s", hasta.ad);
+    scanf("%49s", hasta.ad); // Güvenli giriş
     printf("Hasta Soyadi: ");
-    scanf("%s", hasta.soyad);
+    scanf("%49s", hasta.soyad); // Güvenli giriş
     printf("Hasta Durumu: ");
-    scanf("%s", hasta.durum);
+    getchar(); // Önceki yeni satır karakterini temizle
+    fgets(hasta.durum, sizeof(hasta.durum), stdin); // Güvenli giriş
+    hasta.durum[strcspn(hasta.durum, "\n")] = 0; // Yeni satır karakterini kaldır
     hasta.oncelik = oncelikSor();
     int siraNo = siraNoUret();
     
@@ -144,6 +160,7 @@ void hastaEkle() {
     hastaBas = yeniNodo;
 
     hl7MesajiOlustur(hasta, "Hasta Ekle");
+    kayitlariDosyayaKaydet();
     printf("\nHasta eklendi.\n");
 }
 
@@ -165,12 +182,15 @@ void hastaDurumuGuncelle() {
     Nodo* temp = hastaBas;
 
     printf("Yeni Durum: ");
-    scanf("%s", yeniDurum);
+    getchar(); // Önceki yeni satır karakterini temizle
+    fgets(yeniDurum, sizeof(yeniDurum), stdin); // Güvenli giriş
+    yeniDurum[strcspn(yeniDurum, "\n")] = 0; // Yeni satır karakterini kaldır
 
     while (temp != NULL) {
         if (temp->hasta.id == id) {
             strcpy(temp->hasta.durum, yeniDurum);
             hl7MesajiOlustur(temp->hasta, "Hasta Durumu Guncelle");
+            kayitlariDosyayaKaydet();
             printf("\nHasta durumu guncellendi.\n");
             return;
         }
@@ -182,13 +202,17 @@ void hastaDurumuGuncelle() {
 void receteOlustur() {
     Recete recete;
     ReceteNodo* yeniNodo = (ReceteNodo*)malloc(sizeof(ReceteNodo));
+    if (yeniNodo == NULL) {
+        printf("Bellek tahsisi basarisiz oldu.\n");
+        return;
+    }
 
     printf("Recete ID: ");
     scanf("%d", &recete.id);
     printf("Ilac Adi: ");
-    scanf("%s", recete.ilac_adi);
+    scanf("%49s", recete.ilac_adi); // Güvenli giriş
     printf("Doz: ");
-    scanf("%s", recete.doz);
+    scanf("%19s", recete.doz); // Güvenli giriş
 
     yeniNodo->recete = recete;
     yeniNodo->sonraki = receteBas;
@@ -196,7 +220,7 @@ void receteOlustur() {
 
     char* receteNo = receteNoUret();
     printf("\nRecete olusturuldu. Recete No: %s\n", receteNo);
-    free(receteNo);
+    freeReceteNo(receteNo);
 }
 
 void tumReceteleriGoruntule() {
@@ -225,15 +249,30 @@ void randevuOlustur() {
     }
 
     Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
+    if (yeniNodo == NULL) {
+        printf("Bellek tahsisi basarisiz oldu.\n");
+        return;
+    }
+
     yeniNodo->hasta = hasta->hasta;
     yeniNodo->sonraki = NULL;
 
-    if (randevuSon == NULL) {
+    if (hasta->hasta.oncelik == 1) {
+        // Acil hastalar öne alınır
+        yeniNodo->sonraki = randevuKuyrugu;
         randevuKuyrugu = yeniNodo;
-        randevuSon = yeniNodo;
+        if (randevuSon == NULL) {
+            randevuSon = yeniNodo;
+        }
     } else {
-        randevuSon->sonraki = yeniNodo;
-        randevuSon = yeniNodo;
+        // Normal hastalar kuyruğun sonuna eklenir
+        if (randevuSon == NULL) {
+            randevuKuyrugu = yeniNodo;
+            randevuSon = yeniNodo;
+        } else {
+            randevuSon->sonraki = yeniNodo;
+            randevuSon = yeniNodo;
+        }
     }
 
     hl7MesajiOlustur(hasta->hasta, "Randevu Olustur");
@@ -258,8 +297,7 @@ void siradakiHasta() {
 
 void hastayiTaburcuEt() {
     int id = hastaIdAl();
-    Nodo* temp = hastaBas;
-    Nodo* onceki = NULL;
+    Nodo *temp = hastaBas, *onceki = NULL;
 
     while (temp != NULL && temp->hasta.id != id) {
         onceki = temp;
@@ -277,10 +315,9 @@ void hastayiTaburcuEt() {
         onceki->sonraki = temp->sonraki;
     }
 
-    temp->sonraki = taburcuListeBas;
-    taburcuListeBas = temp;
-
     hl7MesajiOlustur(temp->hasta, "Hasta Taburcu Et");
+    kayitlariDosyayaKaydet();
+    free(temp);
     printf("\nHasta taburcu edildi.\n");
 }
 
@@ -297,22 +334,37 @@ char* receteNoUret() {
     int randomNum = rand() % 1000000;
 
     char* receteNo = (char*) malloc(10 * sizeof(char));
+    if (receteNo == NULL) {
+        printf("Bellek tahsisi basarisiz oldu.\n");
+        exit(1);
+    }
     sprintf(receteNo, "%06d", randomNum);
 
     return receteNo;
 }
 
+void freeReceteNo(char* receteNo) {
+    free(receteNo);
+}
+
 void hl7MesajiOlustur(Hasta hasta, const char* islem) {
-    printf("\nHL7 Mesaji Olusturuluyor: %s\n", islem);
-    printf("MSH|^~\\&|Hastane Bilgi Sistemi|Hastane|Hasta Kayit Sistemi|Hastane|%s||ADT^A01|%d|P|2.3\n", __TIMESTAMP__, rand() % 1000000);
-    printf("PID|1|%d|%d||%s^%s||19700101|M||2106-3|1234 Main St^^Metropolis^IL^12345^USA||(312)555-1212||(312)555-1213||S||PATID1234^2^M10|123456789|987654^^^&2.16.840.1.113883.19.3.2.1.1.9&ISO^MR\n",
-           hasta.id, hasta.id, hasta.ad, hasta.soyad);
-    printf("PV1|1|I|2000^2012^01||||004777^Doktor^Adi^A.|||||||||||V||2|A0\n");
-    printf("AL1|1||^Penicillin||Produces hives\n");
-    printf("ORC|RE|%s^%s|%s^%s||CM||||%s\n", receteNoUret(), "Hastane", receteNoUret(), "Hastane", __TIMESTAMP__);
-    printf("OBR|1|||Complete Blood Count|||%s\n", __TIMESTAMP__);
-    printf("OBX|1|NM|^WBC|1|6.7|10*3/uL|4.5-11.0|N|||F\n");
-    printf("\n");
+    char mesaj[1024];
+    char* receteNo = receteNoUret();
+
+    snprintf(mesaj, sizeof(mesaj),
+        "MSH|^~\\&|Hastane Bilgi Sistemi|Hastane|Hasta Kayit Sistemi|Hastane|%s||ADT^A01|%d|P|2.3\n"
+        "PID|1|%d|%d||%s^%s||19700101|M||2106-3|1234 Main St^^Metropolis^IL^12345^USA||(312)555-1212||(312)555-1213||S||PATID1234^2^M10|123456789|987654^^^&2.16.840.1.113883.19.3.2.1.1.9&ISO^MR\n"
+        "PV1|1|I|2000^2012^01||||004777^Doktor^Adi^A.|||||||||||V||2|A0\n"
+        "AL1|1||^Penicillin||Produces hives\n"
+        "ORC|RE|%s^Hastane|%s^Hastane||CM||||%s\n"
+        "OBR|1|||Complete Blood Count|||%s\n"
+        "OBX|1|NM|^WBC|1|6.7|10*3/uL|4.5-11.0|N|||F\n",
+        __TIMESTAMP__, rand() % 1000000, hasta.id, hasta.id, hasta.ad, hasta.soyad,
+        receteNo, receteNo, __TIMESTAMP__, __TIMESTAMP__);
+
+    printf("\nHL7 Mesaji Olusturuluyor: %s\n%s\n", islem, mesaj);
+    hl7MesajiDosyayaKaydet(mesaj);
+    freeReceteNo(receteNo);
 }
 
 int oncelikSor() {
@@ -327,5 +379,69 @@ int oncelikSor() {
 
 int siraNoUret() {
     static int siraNo = 0;
-    return ++siraNo;
+    FILE *dosya = fopen("sira_no.txt", "r+");
+    if (dosya == NULL) {
+        dosya = fopen("sira_no.txt", "w+");
+        if (dosya == NULL) {
+            printf("Sira numarasi dosyasi acilamadi.\n");
+            exit(1);
+        }
+    }
+    fscanf(dosya, "%d", &siraNo);
+    siraNo++;
+    rewind(dosya);
+    fprintf(dosya, "%d", siraNo);
+    fclose(dosya);
+    return siraNo;
+}
+
+void kayitlariDosyayaKaydet() {
+    FILE *dosya = fopen("hasta_kayitlari.txt", "w");
+    if (dosya == NULL) {
+        printf("Dosya acilamadi.\n");
+        return;
+    }
+
+    Nodo* temp = hastaBas;
+    while (temp != NULL) {
+        fprintf(dosya, "ID: %d, Ad: %s, Soyad: %s, Durum: %s, Oncelik: %s\n", 
+                temp->hasta.id, temp->hasta.ad, temp->hasta.soyad, temp->hasta.durum, 
+                temp->hasta.oncelik ? "Acil" : "Normal");
+        temp = temp->sonraki;
+    }
+
+    fclose(dosya);
+}
+
+void kayitlariDosyadanOku() {
+    FILE *dosya = fopen("hasta_kayitlari.txt", "r");
+    if (dosya == NULL) {
+        printf("Kayit dosyasi bulunamadi, yeni dosya olusturulacak.\n");
+        return;
+    }
+
+    Hasta hasta;
+    while (fscanf(dosya, "ID: %d, Ad: %49s, Soyad: %49s, Durum: %99[^\n], Oncelik: %49s\n",
+                  &hasta.id, hasta.ad, hasta.soyad, hasta.durum, hasta.oncelik ? "Acil" : "Normal") != EOF) {
+        Nodo* yeniNodo = (Nodo*)malloc(sizeof(Nodo));
+        if (yeniNodo == NULL) {
+            printf("Bellek tahsisi basarisiz oldu.\n");
+            fclose(dosya);
+            return;
+        }
+        yeniNodo->hasta = hasta;
+        yeniNodo->sonraki = hastaBas;
+        hastaBas = yeniNodo;
+    }
+    fclose(dosya);
+}
+
+void hl7MesajiDosyayaKaydet(const char* mesaj) {
+    FILE *dosya = fopen("hl7_mesajlari.txt", "a");
+    if (dosya == NULL) {
+        printf("HL7 mesaj dosyasi acilamadi.\n");
+        return;
+    }
+    fprintf(dosya, "%s\n", mesaj);
+    fclose(dosya);
 }
