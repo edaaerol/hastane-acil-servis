@@ -1,42 +1,57 @@
 # hastane-acil-servis
 # Hastane Yönetim Sistemi
 
-Bu proje, hastane yönetimi için temel bir sistem sağlar. Sistem, hastaların kaydedilmesi, durumu güncellenmesi, reçete oluşturulması, randevu oluşturulması ve hastaların taburcu edilmesi gibi işlevleri içerir. Ayrıca, HL7 mesajları oluşturarak bu işlemleri standart bir formatta belgelemektedir.
+Bu proje, bir hastane yönetim sistemini simüle eden bir C programıdır. Bu sistem, hastaların kaydını tutar, reçete oluşturur, randevu planlar ve hastaları taburcu eder. Ayrıca HL7 mesajları oluşturur ve kayıtları dosyalarda saklar.
+
+## İçindekiler
+- [Başlangıç](#başlangıç)
+- [Özellikler](#özellikler)
+- [Kurulum](#kurulum)
+- [Kullanım](#kullanım)
+- [Yapı](#yapı)
+- [Katkıda Bulunma](#katkıda-bulunma)
+- [Lisans](#lisans)
+
+## Başlangıç
+
+Bu talimatlar, projenin yerel makinenizde nasıl çalıştırılacağını gösterir.
+
+### Gereksinimler
+
+- C derleyicisi (gcc veya clang önerilir)
+- Bir metin düzenleyici (Visual Studio Code, Sublime Text, vs.)
 
 ## Özellikler
 
-- Hasta ekleme
-- Tüm hastaları görüntüleme
-- Hasta durumu güncelleme
-- Reçete oluşturma
-- Tüm reçeteleri görüntüleme
-- Randevu oluşturma
-- Sıradaki hastayı görüntüleme
+- Hastaların kayıt edilmesi
+- Hastaların durumlarının güncellenmesi
+- Reçete oluşturma ve görüntüleme
+- Randevu oluşturma ve sıradaki hastayı görüntüleme
 - Hastayı taburcu etme
-- HL7 mesajı oluşturma
+- HL7 mesajları oluşturma ve kaydetme
+- Kayıtların dosyaya kaydedilmesi ve dosyadan okunması
 
 ## Kurulum
 
-Projeyi klonlayın:
+1. Bu projeyi yerel makinenize klonlayın.
+    ```bash
+    git clone https://github.com/kullanici_adi/hastane-yonetim-sistemi.git
+    cd hastane-yonetim-sistemi
+    ```
 
-```bash
-git clone https://github.com/edaaerol/hastane-yonetim-sistemi.git
-cd hastane-yonetim-sistemi
-```
-
-## Derleme ve Çalıştırma
-
-Projeyi derlemek ve çalıştırmak için aşağıdaki adımları izleyin:
-
-```bash
-gcc -o hastane_yonetim_hl7 hastane_yonetimi_hl7.c
-./hastane_yonetim_hl7
-```
+2. Projeyi derleyin.
+    ```bash
+    gcc main.c -o hastane_yonetim_sistemi
+    ```
 
 ## Kullanım
 
-Program çalıştırıldığında, aşağıdaki menü görünecektir:
+Derlenen programı çalıştırın.
+```bash
+./hastane_yonetim_sistemi
+```
 
+Program çalıştığında aşağıdaki menü görünecektir:
 ```
 1. Hasta Ekle
 2. Tüm Hastaları Görüntüle
@@ -51,22 +66,36 @@ Program çalıştırıldığında, aşağıdaki menü görünecektir:
 
 Bir seçenek girerek ilgili işlemi gerçekleştirebilirsiniz.
 
-## HL7 Mesajları
+## Yapı
 
-HL7 (Health Level 7) mesajları, sağlık bilgi sistemleri arasında veri alışverişi için kullanılan standart bir formattır. Bu sistemde, her işlem için ilgili HL7 mesajı oluşturulmakta ve ekranda görüntülenmektedir.
+- `main.c`: Ana program dosyası.
+- `Hasta`, `Nodo`, `Recete`, `ReceteNodo` yapıları: Hasta ve reçete bilgilerini tutan yapılar.
+- Fonksiyonlar:
+  - `baslikGoster()`: Başlığı görüntüler.
+  - `menuGoster()`: Menü seçeneklerini görüntüler.
+  - `hastaEkle()`: Yeni bir hasta ekler.
+  - `tumHastalariGoruntule()`: Tüm hastaları görüntüler.
+  - `hastaDurumuGuncelle()`: Bir hastanın durumunu günceller.
+  - `receteOlustur()`: Yeni bir reçete oluşturur.
+  - `tumReceteleriGoruntule()`: Tüm reçeteleri görüntüler.
+  - `randevuOlustur()`: Yeni bir randevu oluşturur.
+  - `siradakiHasta()`: Sıradaki hastayı görüntüler.
+  - `hastayiTaburcuEt()`: Bir hastayı taburcu eder.
+  - `kayitlariDosyayaKaydet()`: Kayıtları dosyaya kaydeder.
+  - `kayitlariDosyadanOku()`: Kayıtları dosyadan okur.
+  - `hl7MesajiOlustur()`: HL7 mesajı oluşturur.
+  - `hl7MesajiDosyayaKaydet()`: HL7 mesajını dosyaya kaydeder.
 
-Örnek bir HL7 mesajı:
+## Katkıda Bulunma
 
-```
-MSH|^~\&|Hastane Bilgi Sistemi|Hastane|Hasta Kayit Sistemi|Hastane|2025-03-05 21:20:00||ADT^A01|123456|P|2.3
-PID|1|123|123||John^Doe||19700101|M||2106-3|1234 Main St^^Metropolis^IL^12345^USA||(312)555-1212||(312)555-1213||S||PATID1234^2^M10|123456789|987654^^^&2.16.840.1.113883.19.3.2.1.1.9&ISO^MR
-PV1|1|I|2000^2012^01||||004777^Doktor^Adi^A.|||||||||||V||2|A0
-AL1|1||^Penicillin||Produces hives
-ORC|RE|654321^Hastane|654321^Hastane||CM||||2025-03-05 21:20:00
-OBR|1|||Complete Blood Count|||2025-03-05 21:20:00
-OBX|1|NM|^WBC|1|6.7|10*3/uL|4.5-11.0|N|||F
-```
+Katkıda bulunmak istiyorsanız, lütfen önce neyi değiştirmek istediğinizi tartışmak için bir sorun açın.
+
+1. Fork yapın (<https://github.com/kullanici_adi/hastane-yonetim-sistemi/fork>)
+2. Özelliğinizi oluşturun (`git checkout -b ozellik/AmazingFeature`)
+3. Değişikliklerinizi commit yapın (`git commit -m 'Add some AmazingFeature'`)
+4. Branch'e push yapın (`git push origin ozellik/AmazingFeature`)
+5. Bir Pull Request açın
 
 ## Lisans
 
-Bu proje MIT Lisansı ile lisanslanmıştır. Daha fazla bilgi için `LICENSE` dosyasına bakabilirsiniz.
+Bu proje MIT Lisansı ile lisanslanmıştır - detaylar için `LICENSE` dosyasına bakın.
