@@ -20,9 +20,9 @@ typedef struct {
 
 // Bagli Liste Elemani
 typedef struct Node {
-    Hasta hasta;
+    Hasta hasta;  //Hasta: Hasta bilgilerini tutan bir yapı
     struct Node* sonraki;
-} Node;
+} Node;  //Node: Hastaları bağlı listede tutmak için kullanılan düğüm
 
 // Ilac Bilgileri Yapisi
 typedef struct {
@@ -33,12 +33,12 @@ typedef struct {
 
 // Ilac Bilgileri Bagli Liste Elemani
 typedef struct ReceteNode {
-    Recete recete;
+    Recete recete;  //Recete: İlaç bilgilerini tutan bir yapı
     struct ReceteNode* sonraki;
-} ReceteNode;
+} ReceteNode;  //ReceteNode: İlaçları bağlı listede tutmak için kullanılan düğüm
 
 // Fonksiyon Prototipleri
-void hastaEkle();
+void hastaEkle();  // Yeni hasta kaydı oluşturma
 void tumHastalariGoruntule();
 void hastaDurumuGuncelle();
 void receteOlustur();
@@ -58,11 +58,11 @@ void hl7MesajiDosyayaKaydet(const char* mesaj);
 void freeReceteNo(char* receteNo);
 
 // Global Degiskenler
-Node* hastaBas = NULL;
-ReceteNode* receteBas = NULL;
-Node* randevuKuyrugu = NULL;
+Node* hastaBas = NULL;  // hastaBas: Tüm hastaların listesinin başlangıç noktası
+ReceteNode* receteBas = NULL;  //receteBas: Tüm reçetelerin listesinin başlangıç noktası
+Node* randevuKuyrugu = NULL;  // randevuKuyrugu: Muayene için bekleyen hastaların sırası
 Node* randevuSon = NULL;
-Node* taburcuListeBas = NULL;
+Node* taburcuListeBas = NULL;  // taburcuListeBas: Taburcu edilen hastaların listesi
 int siraNo = 0;
 
 int main() {
@@ -84,28 +84,28 @@ int main() {
 
         switch (secim) {
             case 1:
-                hastaEkle();
+                hastaEkle();  // Yeni hasta kaydı oluşturma
                 break;
             case 2:
-                tumHastalariGoruntule();
+                tumHastalariGoruntule();  // Sisteme kayıtlı tüm hastaları listeleme
                 break;
             case 3:
-                hastaDurumuGuncelle();
+                hastaDurumuGuncelle();    // Mevcut bir hastanın durumunu değiştirme
                 break;
             case 4:
-                randevuOlustur();
-                break;
+                randevuOlustur();  // Hastalar için randevu oluşturma
+                break;  
             case 5:
-                siradakiHasta();
+                siradakiHasta();  // Sıradaki hastayı çağırma
                 break;
             case 6:
-                receteOlustur();
+                receteOlustur();  // Hastalar için ilaç reçetesi hazırlama
                 break;
             case 7:
-                tumReceteleriGoruntule();
+                tumReceteleriGoruntule();  // Oluşturulan tüm reçeteleri listeleme
                 break;
             case 8:
-                hastayiTaburcuEt();
+                hastayiTaburcuEt();  // Bir hastayı sistemden çıkarma
                 break;
             case 9:
                 printf("Cikis yapiliyor...\n");
@@ -379,7 +379,7 @@ int oncelikSor() {
 
 int siraNoUret() {
     static int siraNo = 0;
-    FILE *dosya = fopen("sira_no.txt", "r+");
+    FILE *dosya = fopen("sira_no.txt", "r+");  // sira_no.txt: Otomatik sıra numarası üretimi için sayaç 
     if (dosya == NULL) {
         dosya = fopen("sira_no.txt", "w+");
         if (dosya == NULL) {
@@ -396,7 +396,7 @@ int siraNoUret() {
 }
 
 void kayitlariDosyayaKaydet() {
-    FILE *dosya = fopen("hasta_kayitlari.txt", "w");
+    FILE *dosya = fopen("hasta_kayitlari.txt", "w");  //hasta_kayitlari.txt: Hasta bilgileri
     if (dosya == NULL) {
         printf("Dosya acilamadi.\n");
         return;
@@ -437,7 +437,7 @@ void kayitlariDosyadanOku() {
 }
 
 void hl7MesajiDosyayaKaydet(const char* mesaj) {
-    FILE *dosya = fopen("hl7_mesajlari.txt", "a");
+    FILE *dosya = fopen("hl7_mesajlari.txt", "a");  //hl7_mesajlari.txt: Sağlık sistemleri arasında veri paylaşımı için standart olan HL7 formatında mesajlar
     if (dosya == NULL) {
         printf("HL7 mesaj dosyasi acilamadi.\n");
         return;
