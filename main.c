@@ -3,6 +3,10 @@
 #include <string.h>
 #include <time.h>
 
+// Bu kod, bir hastane yönetim sistemi uygulamasının temel işlevlerini içerir. 
+//Kullanıcılar hasta ekleyebilir, hasta bilgilerini güncelleyebilir, reçete oluşturabilir ve randevu oluşturabilir. 
+//Ayrıca, HL7 formatında mesajlar oluşturulup kaydedilir.
+
 // Baslik
 void baslikGoster() {
     printf("-       Hastane Yonetim Sistemi      -\n");
@@ -20,9 +24,9 @@ typedef struct {
 
 // Bagli Liste Elemani
 typedef struct Node {
-    Hasta hasta;  //Hasta: Hasta bilgilerini tutan bir yapı
+    Hasta hasta;  // Hasta bilgilerini tutan bir yapı
     struct Node* sonraki;
-} Node;  //Node: Hastaları bağlı listede tutmak için kullanılan düğüm
+} Node;  // Hastaları bağlı listede tutmak için kullanılan düğüm
 
 // Ilac Bilgileri Yapisi
 typedef struct {
@@ -33,11 +37,10 @@ typedef struct {
 
 // Ilac Bilgileri Bagli Liste Elemani
 typedef struct ReceteNode {
-    Recete recete;  //Recete: İlaç bilgilerini tutan bir yapı
+    Recete recete;  // İlaç bilgilerini tutan bir yapı
     struct ReceteNode* sonraki;
-} ReceteNode;  //ReceteNode: İlaçları bağlı listede tutmak için kullanılan düğüm
+} ReceteNode;  // İlaçları bağlı listede tutmak için kullanılan düğüm
 
-// Fonksiyon Prototipleri
 void hastaEkle();  // Yeni hasta kaydı oluşturma
 void tumHastalariGoruntule();
 void hastaDurumuGuncelle();
@@ -56,14 +59,15 @@ void kayitlariDosyayaKaydet();
 void kayitlariDosyadanOku();
 void hl7MesajiDosyayaKaydet(const char* mesaj);
 void freeReceteNo(char* receteNo);
+// Fonksiyon prototipleri, fonksiyonların ne türde ve hangi parametrelerle çalıştığını belirtir.
 
-// Global Degiskenler
-Node* hastaBas = NULL;  // hastaBas: Tüm hastaların listesinin başlangıç noktası
-ReceteNode* receteBas = NULL;  //receteBas: Tüm reçetelerin listesinin başlangıç noktası
-Node* randevuKuyrugu = NULL;  // randevuKuyrugu: Muayene için bekleyen hastaların sırası
-Node* randevuSon = NULL;
-Node* taburcuListeBas = NULL;  // taburcuListeBas: Taburcu edilen hastaların listesi
+Node* hastaBas = NULL;  // Tüm hastaların listesinin başlangıç noktası
+ReceteNode* receteBas = NULL;  // Tüm reçetelerin listesinin başlangıç noktası
+Node* randevuKuyrugu = NULL;  // Muayene için bekleyen hastaların sırası
+Node* randevuSon = NULL;  // Randevu sırasının sonu
+Node* taburcuListeBas = NULL;  // Taburcu edilen hastaların listesi
 int siraNo = 0;
+// Global değişkenler tanımlanır. Bu değişkenler, programın her yerinde kullanılabilir.
 
 int main() {
     int secim;
@@ -78,7 +82,7 @@ int main() {
             printf("Gecersiz giris! Lutfen bir sayi girin.\n");
             while (getchar() != '\n'); // Hatali girisi temizlemek icin buffer'i temizle
             continue;
-        }
+        } 
 
         printf("\n");
 
@@ -119,8 +123,11 @@ int main() {
 
     return 0;
 }
+// Kullanıcıdan seçim almak ve ilgili işlemleri yapmak için bir sonsuz döngü (while (1)) kullanılır. 
+// Kullanıcı geçerli bir seçenek girmezse, hata mesajı gösterilir ve döngü devam eder. 
+// Kullanıcı geçerli bir seçenek girerse, switch ifadesi kullanılarak ilgili fonksiyon çağrılır.
 
-void menuGoster() {
+void menuGoster() { 
     printf("\n1. Hasta Ekle\n");
     printf("2. Tum Hastalari Goruntule\n");
     printf("3. Hasta Durumu Guncelle\n");
@@ -130,7 +137,7 @@ void menuGoster() {
     printf("7. Tum Receteleri Goruntule\n");
     printf("8. Hastayi Taburcu Et\n");
     printf("9. Cikis\n");
-}
+}  // menuGoster fonksiyonu, kullanıcıya mevcut seçenekleri gösterir.
 
 void hastaEkle() {
     Hasta hasta;
@@ -162,7 +169,8 @@ void hastaEkle() {
     hl7MesajiOlustur(hasta, "Hasta Ekle");
     kayitlariDosyayaKaydet();
     printf("\nHasta eklendi.\n");
-}
+} // hastaEkle fonksiyonu, yeni bir hasta kaydı oluşturur. Bellek tahsisi yapılır ve kullanıcının girdiği bilgiler hasta yapısına atanır. 
+// Hasta acil mi, değil mi sorulur ve sıra numarası üretilir. Yeni hasta düğümü listenin başına eklenir. HL7 mesajı oluşturulur ve kayıtlar dosyaya kaydedilir.
 
 void tumHastalariGoruntule() {
     Node* temp = hastaBas;
@@ -174,7 +182,7 @@ void tumHastalariGoruntule() {
         printf("ID: %d, Ad: %s, Soyad: %s, Durum: %s, Oncelik: %s\n", temp->hasta.id, temp->hasta.ad, temp->hasta.soyad, temp->hasta.durum, temp->hasta.oncelik ? "Acil" : "Normal");
         temp = temp->sonraki;
     }
-}
+} // tumHastalariGoruntule fonksiyonu, sistemde kayıtlı tüm hastaları görüntüler. Liste başından başlayarak her düğümdeki hasta bilgilerini ekrana yazdırır.
 
 void hastaDurumuGuncelle() {
     int id = hastaIdAl();
@@ -197,7 +205,8 @@ void hastaDurumuGuncelle() {
         temp = temp->sonraki;
     }
     printf("Hasta bulunamadi.\n");
-}
+}  // hastaDurumuGuncelle fonksiyonu, mevcut bir hastanın durumunu günceller. Kullanıcıdan hasta ID'si ve yeni durum bilgisi alınır.
+// Liste başından başlayarak ilgili hasta bulunur ve durumu güncellenir. HL7 mesajı oluşturulur ve kayıtlar dosyaya kaydedilir.
 
 void receteOlustur() {
     Recete recete;
@@ -221,7 +230,8 @@ void receteOlustur() {
     char* receteNo = receteNoUret();
     printf("\nRecete olusturuldu. Recete No: %s\n", receteNo);
     freeReceteNo(receteNo);
-}
+}  // receteOlustur fonksiyonu, yeni bir reçete oluşturur. Bellek tahsisi yapılır ve kullanıcının girdiği bilgiler reçete yapısına atanır. 
+// Yeni reçete düğümü listenin başına eklenir. Reçete numarası üretilir ve ekrana yazdırılır.
 
 void tumReceteleriGoruntule() {
     ReceteNode* temp = receteBas;
@@ -233,7 +243,7 @@ void tumReceteleriGoruntule() {
         printf("ID: %d, Ilac Adi: %s, Doz: %s\n", temp->recete.id, temp->recete.ilac_adi, temp->recete.doz);
         temp = temp->sonraki;
     }
-}
+}  // tumReceteleriGoruntule fonksiyonu, sistemde kayıtlı tüm reçeteleri görüntüler. Liste başından başlayarak her düğümdeki reçete bilgilerini ekrana yazdırır.
 
 void randevuOlustur() {
     int hastaId = hastaIdAl();
@@ -277,7 +287,9 @@ void randevuOlustur() {
 
     hl7MesajiOlustur(hasta->hasta, "Randevu Olustur");
     printf("\nRandevu olusturuldu.\n");
-}
+}  // randevuOlustur fonksiyonu, hastalar için randevu oluşturur. Kullanıcıdan hasta ID'si alınır ve ilgili hasta bulunur. 
+// Bellek tahsisi yapılır ve yeni randevu düğümü oluşturulur. Hasta acilse, randevu kuyruğunun başına eklenir. 
+// Normal hastalar kuyruğun sonuna eklenir. HL7 mesajı oluşturulur ve randevu oluşturulduğu mesajı ekrana yazdırılır.
 
 void siradakiHasta() {
     if (randevuKuyrugu == NULL) {
@@ -293,7 +305,7 @@ void siradakiHasta() {
     if (randevuKuyrugu == NULL) {
         randevuSon = NULL;
     }
-}
+}  // siradakiHasta fonksiyonu, sıradaki hastayı çağırır. Randevu kuyruğunun başındaki hasta bilgileri ekrana yazdırılır ve düğüm serbest bırakılır. Kuyruk başı güncellenir.
 
 void hastayiTaburcuEt() {
     int id = hastaIdAl();
@@ -319,14 +331,15 @@ void hastayiTaburcuEt() {
     kayitlariDosyayaKaydet();
     free(temp);
     printf("\nHasta taburcu edildi.\n");
-}
+}  // hastayiTaburcuEt fonksiyonu, bir hastayı sistemden çıkarır. Kullanıcıdan hasta ID'si alınır ve ilgili hasta bulunur. 
+// Hasta listeden çıkarılır, HL7 mesajı oluşturulur ve kayıtlar dosyaya kaydedilir. Hasta serbest bırakılır ve taburcu edildiği mesajı ekrana yazdırılır.
 
 int hastaIdAl() {
     int id;
     printf("Hasta ID: ");
     scanf("%d", &id);
     return id;
-}
+}  // hastaIdAl fonksiyonu, kullanıcıdan hasta ID'si alır ve döndürür.
 
 char* receteNoUret() {
     time_t t;
@@ -341,11 +354,11 @@ char* receteNoUret() {
     sprintf(receteNo, "%06d", randomNum);
 
     return receteNo;
-}
+}  // receteNoUret fonksiyonu rastgele bir reçete numarası oluşturur ve döner.
 
 void freeReceteNo(char* receteNo) {
     free(receteNo);
-}
+}  // freeReceteNo fonksiyonu reçete numarasını serbest bırakır.
 
 void hl7MesajiOlustur(Hasta hasta, const char* islem) {
     char mesaj[1024];
@@ -365,7 +378,9 @@ void hl7MesajiOlustur(Hasta hasta, const char* islem) {
     printf("\nHL7 Mesaji Olusturuluyor: %s\n%s\n", islem, mesaj);
     hl7MesajiDosyayaKaydet(mesaj);
     freeReceteNo(receteNo);
-}
+}  // hl7MesajiOlustur fonksiyonu, HL7 formatında bir mesaj oluşturur ve bu mesajı bir dosyaya kaydeder. 
+//HL7 mesajları, sağlık sistemleri arasında veri paylaşımı için standart bir formattır. 
+// Fonksiyon, hasta bilgilerini kullanarak mesajı oluşturur ve ardından mesajı dosyaya yazar.
 
 int oncelikSor() {
     char cevap;
@@ -375,7 +390,7 @@ int oncelikSor() {
         return 1; // Acil
     }
     return 0; // Normal
-}
+}  // oncelikSor fonksiyonu, kullanıcıya hastanın durumunun acil olup olmadığını sorar ve buna göre 1 (acil) veya 0 (normal) döner.
 
 int siraNoUret() {
     static int siraNo = 0;
@@ -393,7 +408,7 @@ int siraNoUret() {
     fprintf(dosya, "%d", siraNo);
     fclose(dosya);
     return siraNo;
-}
+} // siraNoUret fonksiyonu, otomatik bir sıra numarası üretir ve bu numarayı bir dosyada saklar. Her çağrıldığında, mevcut sıra numarasını okur, bir artırır ve yeniden dosyaya yazar.
 
 void kayitlariDosyayaKaydet() {
     FILE *dosya = fopen("hasta_kayitlari.txt", "w");  //hasta_kayitlari.txt: Hasta bilgileri
@@ -411,7 +426,7 @@ void kayitlariDosyayaKaydet() {
     }
 
     fclose(dosya);
-}
+}  // kayitlariDosyayaKaydet fonksiyonu, hasta bilgilerini bir dosyaya yazar. Hasta listesinde gezinir ve her hastanın bilgilerini dosyaya kaydeder.
 
 void kayitlariDosyadanOku() {
     FILE *dosya = fopen("hasta_kayitlari.txt", "r");
@@ -434,7 +449,7 @@ void kayitlariDosyadanOku() {
         hastaBas = yeniNode;
     }
     fclose(dosya);
-}
+}  // kayitlariDosyadanOku fonksiyonu, hasta bilgilerini bir dosyadan okur ve hasta listesine ekler. Dosya bulunamazsa, yeni bir dosya oluşturulacağı belirtilir.
 
 void hl7MesajiDosyayaKaydet(const char* mesaj) {
     FILE *dosya = fopen("hl7_mesajlari.txt", "a");  //hl7_mesajlari.txt: Sağlık sistemleri arasında veri paylaşımı için standart olan HL7 formatında mesajlar
@@ -444,4 +459,4 @@ void hl7MesajiDosyayaKaydet(const char* mesaj) {
     }
     fprintf(dosya, "%s\n", mesaj);
     fclose(dosya);
-}
+}  // hl7MesajiDosyayaKaydet fonksiyonu, HL7 mesajlarını bir dosyaya ekler. Mesajı dosyaya yazar ve dosyayı kapatır.
