@@ -1,72 +1,108 @@
-# Proje Analiz Dökümanı
+# Hastane Yönetim Sistemi Proje Analizi
 
-## Giriş
+## Projenin Amacı
+Bu proje, bir hastane yönetim sistemi uygulamasının temel işlevlerini içerir. Kullanıcılar hasta ekleyebilir, hasta bilgilerini güncelleyebilir, reçete oluşturabilir ve randevu oluşturabilir. Ayrıca, HL7 formatında mesajlar oluşturulup kaydedilir.
 
-Bu belge, "Hastane Yönetim Sistemi" projesinin tasarımını ve çalışma mantığını açıklamaktadır. Proje, hastane operasyonlarını yönetmek için bir dizi işlevsellik sağlar ve hasta verilerini, reçeteleri ve randevuları yönetir.
+## Kullanıcı İhtiyaçları
+- **Hasta Ekleme:** Yeni hasta kaydı oluşturma ve bilgilerini saklama.
+- **Hasta Bilgilerini Görüntüleme:** Sisteme kayıtlı tüm hastaların bilgilerini listeleme.
+- **Hasta Durumunu Güncelleme:** Mevcut bir hastanın durumunu değiştirme.
+- **Reçete Oluşturma:** Hastalar için ilaç reçetesi hazırlama.
+- **Randevu Oluşturma:** Hastalar için randevu oluşturma ve randevu sırasını yönetme.
+- **Sıradaki Hastayı Çağırma:** Randevu sırasındaki sıradaki hastayı çağırma.
+- **Hasta Taburcu Etme:** Bir hastayı sistemden çıkarma.
+- **HL7 Mesajları:** HL7 formatında mesajlar oluşturma ve kaydetme.
+
+## Sistem Gereksinimleri
+- **Girdi:** Hasta bilgileri, reçete bilgileri, randevu bilgileri.
+- **Çıktı:** Hasta listesi, reçete listesi, randevu listesi, HL7 mesajları.
+- **Veri Depolama:** Hasta bilgileri, reçete bilgileri ve HL7 mesajları dosyalarda saklanır.
+- **Bellek Yönetimi:** Dinamik bellek tahsisi kullanılarak bağlı listeler oluşturulur.
+
+## Fonksiyonlar ve İşlevleri
+- **baslikGoster:** Programın başlığını ekrana yazdırır.
+- **menuGoster:** Kullanıcıya mevcut seçenekleri gösterir.
+- **hastaEkle:** Yeni hasta kaydı oluşturur.
+- **tumHastalariGoruntule:** Sisteme kayıtlı tüm hastaları listeleme.
+- **hastaDurumuGuncelle:** Mevcut bir hastanın durumunu günceller.
+- **receteOlustur:** Yeni bir reçete oluşturur.
+- **tumReceteleriGoruntule:** Sistemde kayıtlı tüm reçeteleri görüntüler.
+- **randevuOlustur:** Hastalar için randevu oluşturur.
+- **siradakiHasta:** Sıradaki hastayı çağırır.
+- **hastayiTaburcuEt:** Bir hastayı sistemden çıkarır.
+- **hastaIdAl:** Kullanıcıdan hasta ID'si alır.
+- **receteNoUret:** Rastgele bir reçete numarası oluşturur.
+- **freeReceteNo:** Reçete numarasını serbest bırakır.
+- **hl7MesajiOlustur:** HL7 formatında bir mesaj oluşturur.
+- **oncelikSor:** Hastanın acil olup olmadığını sorar.
+- **siraNoUret:** Otomatik bir sıra numarası üretir.
+- **kayitlariDosyayaKaydet:** Hasta bilgilerini bir dosyaya yazar.
+- **kayitlariDosyadanOku:** Hasta bilgilerini bir dosyadan okur.
+- **hl7MesajiDosyayaKaydet:** HL7 mesajlarını bir dosyaya ekler.
 
 ## Akış Şemaları
 
-### Hasta Ekleme Akış Şeması
-
+### Ana Menü Akış Şeması
 ```mermaid
 graph TD;
-    A["Kullanıcı 'Hasta Ekle' seçeneğini seçer"] --> B["Kullanıcıdan hasta bilgileri istenir"];
-    B --> C["Yeni hasta bilgileri bağlı listeye eklenir"];
-    C --> D["HL7 mesajı oluşturulur ve dosyaya kaydedilir"];
-    D --> E["Hasta bilgileri dosyaya kaydedilir"];
-    E --> F["Hasta eklendi mesajı görüntülenir"];
+    A[Başla] --> B[Başlık Göster]
+    B --> C[Kayıtları Oku]
+    C --> D[Menü Göster]
+    D --> E[Seçim Yap]
+    E --> F{Seçim}
+    F --> |1| G[Hasta Ekle]
+    F --> |2| H[Tüm Hastaları Görüntüle]
+    F --> |3| I[Hasta Durumu Güncelle]
+    F --> |4| J[Randevu Oluştur]
+    F --> |5| K[Sıradaki Hasta]
+    F --> |6| L[Reçete Oluştur]
+    F --> |7| M[Tüm Reçeteleri Görüntüle]
+    F --> |8| N[Hastayı Taburcu Et]
+    F --> |9| O[Cikis]
+    G --> D
+    H --> D
+    I --> D
+    J --> D
+    K --> D
+    L --> D
+    M --> D
+    N --> D
+    O --> P[Bitir]
+```
+
+### Hasta Ekleme Akış Şeması
+```mermaid
+graph TD;
+    A[Başla] --> B[Hasta Bilgilerini Al]
+    B --> C[Bellek Tahsis Et]
+    C --> D[Listeye Ekle]
+    D --> E[HL7 Mesajı Oluştur]
+    E --> F[Kayıtları Kaydet]
+    F --> G[Mesaj Göster]
+    G --> H[Bitir]
 ```
 
 ### Hasta Durumu Güncelleme Akış Şeması
-
 ```mermaid
 graph TD;
-    A["Kullanıcı 'Hasta Durumu Güncelle' seçeneğini seçer"] --> B["Kullanıcıdan güncellenecek hastanın ID'si istenir"];
-    B --> C["Kullanıcıdan yeni durum bilgisi istenir"];
-    C --> D["İlgili hasta bulunur ve durumu güncellenir"];
-    D --> E["HL7 mesajı oluşturulur ve dosyaya kaydedilir"];
-    E --> F["Hasta bilgileri dosyaya kaydedilir"];
-    F --> G["Hasta durumu güncellendi mesajı görüntülenir"];
+    A[Başla] --> B[Hasta ID Al]
+    B --> C[Yeni Durum Al]
+    C --> D[Hasta Bul]
+    D --> E[Durumu Güncelle]
+    E --> F[HL7 Mesajı Oluştur]
+    F --> G[Kayıtları Kaydet]
+    G --> H[Mesaj Göster]
+    H --> I[Bitir]
 ```
 
 ### Randevu Oluşturma Akış Şeması
-
 ```mermaid
 graph TD;
-    A["Kullanıcı 'Randevu Oluştur' seçeneğini seçer"] --> B["Kullanıcıdan randevu oluşturulacak hastanın ID'si istenir"];
-    B --> C["İlgili hasta bulunur ve randevu kuyruğuna eklenir"];
-    C --> D["HL7 mesajı oluşturulur ve dosyaya kaydedilir"];
-    D --> E["Randevu oluşturuldu mesajı görüntülenir"];
+    A[Başla] --> B[Hasta ID Al]
+    B --> C[Hasta Bul]
+    C --> D[Randevu Düğümü Oluştur]
+    D --> E[Kuyruğa Ekle]
+    E --> F[HL7 Mesajı Oluştur]
+    F --> G[Mesaj Göster]
+    G --> H[Bitir]
 ```
-
-### Sıradaki Hasta Akış Şeması
-
-```mermaid
-graph TD;
-    A["Kullanıcı 'Sıradaki Hasta' seçeneğini seçer"] --> B["Randevu kuyruğunun başındaki hasta görüntülenir"];
-    B --> C["Hasta randevu kuyruğundan çıkarılır"];
-    C --> D["Sıradaki hasta bilgileri görüntülenir"];
-```
-
-### Hasta Taburcu Etme Akış Şeması
-
-```mermaid
-graph TD;
-    A["Kullanıcı 'Hastayı Taburcu Et' seçeneğini seçer"] --> B["Kullanıcıdan taburcu edilecek hastanın ID'si istenir"];
-    B --> C["İlgili hasta bulunur ve listeden çıkarılır"];
-    C --> D["HL7 mesajı oluşturulur ve dosyaya kaydedilir"];
-    D --> E["Hasta bilgileri dosyaya kaydedilir"];
-    E --> F["Hasta taburcu edildi mesajı görüntülenir"];
-```
-
-## Çalışma Mantığı
-
-- **Hasta Bilgileri:** Hasta bilgileri `Hasta` yapısında tutulur ve bağlı liste yapısı ile yönetilir.
-- **Reçete Bilgileri:** Reçete bilgileri `Recete` yapısında tutulur ve bağlı liste yapısı ile yönetilir.
-- **Randevu Sistemi:** Randevular, hastaların acil olup olmamasına göre önceliklendirilir ve bağlı liste ile yönetilir.
-- **Dosya İşlemleri:** Hasta ve reçete bilgileri dosyaya kaydedilir ve dosyadan okunur. Ayrıca HL7 mesajları dosyaya kaydedilir.
-- **HL7 Mesajları:** HL7 formatında mesajlar oluşturulur ve dosyaya kaydedilir.
-
-## Sonuç
-
-Bu proje, hastane yönetim sisteminin temel işlevlerini simüle eden bir C programıdır. Kullanıcı dostu arayüzü ve kapsamlı işlevleri ile hastane operasyonlarını etkin bir şekilde yönetmeyi amaçlar.
