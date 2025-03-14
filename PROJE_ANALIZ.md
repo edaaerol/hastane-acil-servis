@@ -40,7 +40,9 @@ Bu proje, bir hastane yönetim sistemi uygulamasının temel işlevlerini içeri
 - **kayitlariDosyadanOku:** Hasta bilgilerini bir dosyadan okur.
 - **hl7MesajiDosyayaKaydet:** HL7 mesajlarını bir dosyaya ekler.
 
-## Akış Şeması
+## Akış Şemaları
+
+### Ana Menü Akış Şeması
 ```mermaid
 graph TD;
     A[Başla] --> B[Başlık Göster]
@@ -99,6 +101,139 @@ graph TD;
     N5 --> N6[Mesaj Göster]
     N6 --> D
     O --> P[Bitir]
+```
+
+### Hasta Ekleme Akış Şeması
+```mermaid
+graph TD;
+    A[Hasta Ekleme] --> B[Hasta Bilgilerini Al]
+    B --> C[Bellek Tahsis Et]
+    C --> D[Listeye Ekle]
+    D --> E[HL7 Mesajı Oluştur]
+    E --> F[Kayıtları Kaydet]
+    F --> G[Mesaj Göster]
+    G --> H[Bitir]
+```
+
+### Hasta Durumu Güncelleme Akış Şeması
+```mermaid
+graph TD;
+    A[Hasta Durumu Güncelleme] --> B[Hasta ID Al]
+    B --> C[Yeni Durum Al]
+    C --> D[Hasta Bul]
+    D --> E[Durumu Güncelle]
+    E --> F[HL7 Mesajı Oluştur]
+    F --> G[Kayıtları Kaydet]
+    G --> H[Mesaj Göster]
+    H --> I[Bitir]
+```
+
+### Randevu Oluşturma Akış Şeması
+```mermaid
+graph TD;
+    A[Randevu Oluşturma] --> B[Hasta ID Al]
+    B --> C[Hasta Bul]
+    C --> D[Randevu Düğümü Oluştur]
+    D --> E[Kuyruğa Ekle]
+    E --> F[HL7 Mesajı Oluştur]
+    F --> G[Mesaj Göster]
+    G --> H[Bitir]
+```
+
+### Sıradaki Hasta Akış Şeması
+```mermaid
+graph TD;
+    A[Sıradaki Hasta] --> B[Sıradaki Hastayı Çağır]
+    B --> C[Mesaj Göster]
+    C --> D[Bitir]
+```
+
+### Reçete Oluşturma Akış Şeması
+```mermaid
+graph TD;
+    A[Reçete Oluşturma] --> B[Reçete Bilgilerini Al]
+    B --> C[Bellek Tahsis Et]
+    C --> D[Listeye Ekle]
+    D --> E[Reçete Numarası Üret]
+    E --> F[Mesaj Göster]
+    F --> G[Bitir]
+```
+
+### Tüm Reçeteleri Görüntüleme Akış Şeması
+```mermaid
+graph TD;
+    A[Tüm Reçeteleri Görüntüleme] --> B[Tüm Reçeteleri Listele]
+    B --> C[Bitir]
+```
+
+### Hasta Taburcu Etme Akış Şeması
+```mermaid
+graph TD;
+    A[Hasta Taburcu Etme] --> B[Hasta ID Al]
+    B --> C[Hasta Bul]
+    C --> D[Hasta Çıkar]
+    D --> E[HL7 Mesajı Oluştur]
+    E --> F[Kayıtları Kaydet]
+    F --> G[Mesaj Göster]
+    G --> H[Bitir]
+```
+
+### Hasta ID Alma Akış Şeması
+```mermaid
+graph TD;
+    A[Hasta ID Alma] --> B[Hasta ID Al]
+    B --> C[Bitir]
+```
+
+### Reçete Numarası Üretme Akış Şeması
+```mermaid
+graph TD;
+    A[Reçete Numarası Üretme] --> B[Reçete Numarası Üret]
+    B --> C[Bitir]
+```
+
+### HL7 Mesajı Oluşturma Akış Şeması
+```mermaid
+graph TD;
+    A[HL7 Mesajı Oluşturma] --> B[HL7 Mesajı Oluştur]
+    B --> C[Mesajı Kaydet]
+    C --> D[Bitir]
+```
+
+### Öncelik Sorma Akış Şeması
+```mermaid
+graph TD;
+    A[Öncelik Sorma] --> B[Hasta Durumu Sorma]
+    B --> C[Durumu Al]
+    C --> D[Bitir]
+```
+
+### Sıra Numarası Üretme Akış Şeması
+```mermaid
+graph TD;
+    A[Sıra Numarası Üretme] --> B[Sıra Numarası Üret]
+    B --> C[Bitir]
+```
+
+### Kayıtları Dosyaya Kaydetme Akış Şeması
+```mermaid
+graph TD;
+    A[Kayıtları Dosyaya Kaydetme] --> B[Kayıtları Dosyaya Kaydet]
+    B --> C[Bitir]
+```
+
+### Kayıtları Dosyadan Okuma Akış Şeması
+```mermaid
+graph TD;
+    A[Kayıtları Dosyadan Okuma] --> B[Kayıtları Dosyadan Oku]
+    B --> C[Bitir]
+```
+
+### HL7 Mesajını Dosyaya Kaydetme Akış Şeması
+```mermaid
+graph TD;
+    A[HL7 Mesajını Dosyaya Kaydetme] --> B[HL7 Mesajını Dosyaya Kaydet]
+    B --> C[Bitir]
 ```
 
 ## Geliştirme Süreci
