@@ -40,9 +40,7 @@ Bu proje, bir hastane yönetim sistemi uygulamasının temel işlevlerini içeri
 - **kayitlariDosyadanOku:** Hasta bilgilerini bir dosyadan okur.
 - **hl7MesajiDosyayaKaydet:** HL7 mesajlarını bir dosyaya ekler.
 
-## Akış Şemaları
-
-### Ana Menü Akış Şeması
+## Akış Şeması
 ```mermaid
 graph TD;
     A[Başla] --> B[Başlık Göster]
@@ -59,50 +57,62 @@ graph TD;
     F --> |7| M[Tüm Reçeteleri Görüntüle]
     F --> |8| N[Hastayı Taburcu Et]
     F --> |9| O[Cikis]
-    G --> D
-    H --> D
-    I --> D
-    J --> D
-    K --> D
-    L --> D
-    M --> D
-    N --> D
+    G --> G1[Hasta Bilgilerini Al]
+    G1 --> G2[Bellek Tahsis Et]
+    G2 --> G3[Listeye Ekle]
+    G3 --> G4[HL7 Mesajı Oluştur]
+    G4 --> G5[Kayıtları Kaydet]
+    G5 --> G6[Mesaj Göster]
+    G6 --> D
+    H --> H1[Tüm Hastaları Listele]
+    H1 --> D
+    I --> I1[Hasta ID Al]
+    I1 --> I2[Yeni Durum Al]
+    I2 --> I3[Hasta Bul]
+    I3 --> I4[Durumu Güncelle]
+    I4 --> I5[HL7 Mesajı Oluştur]
+    I5 --> I6[Kayıtları Kaydet]
+    I6 --> I7[Mesaj Göster]
+    I7 --> D
+    J --> J1[Hasta ID Al]
+    J1 --> J2[Hasta Bul]
+    J2 --> J3[Randevu Düğümü Oluştur]
+    J3 --> J4[Kuyruğa Ekle]
+    J4 --> J5[HL7 Mesajı Oluştur]
+    J5 --> J6[Mesaj Göster]
+    J6 --> D
+    K --> K1[Sıradaki Hastayı Çağır]
+    K1 --> D
+    L --> L1[Reçete Bilgilerini Al]
+    L1 --> L2[Bellek Tahsis Et]
+    L2 --> L3[Listeye Ekle]
+    L3 --> L4[Reçete Numarası Üret]
+    L4 --> L5[Mesaj Göster]
+    L5 --> D
+    M --> M1[Tüm Reçeteleri Listele]
+    M1 --> D
+    N --> N1[Hasta ID Al]
+    N1 --> N2[Hasta Bul]
+    N2 --> N3[Hasta Çıkar]
+    N3 --> N4[HL7 Mesajı Oluştur]
+    N4 --> N5[Kayıtları Kaydet]
+    N5 --> N6[Mesaj Göster]
+    N6 --> D
     O --> P[Bitir]
 ```
 
-### Hasta Ekleme Akış Şeması
-```mermaid
-graph TD;
-    A[Başla] --> B[Hasta Bilgilerini Al]
-    B --> C[Bellek Tahsis Et]
-    C --> D[Listeye Ekle]
-    D --> E[HL7 Mesajı Oluştur]
-    E --> F[Kayıtları Kaydet]
-    F --> G[Mesaj Göster]
-    G --> H[Bitir]
-```
+## Geliştirme Süreci
+Bu bölümde, projenin geliştirme aşamaları ve süreçleri hakkında bilgi verilir.
 
-### Hasta Durumu Güncelleme Akış Şeması
-```mermaid
-graph TD;
-    A[Başla] --> B[Hasta ID Al]
-    B --> C[Yeni Durum Al]
-    C --> D[Hasta Bul]
-    D --> E[Durumu Güncelle]
-    E --> F[HL7 Mesajı Oluştur]
-    F --> G[Kayıtları Kaydet]
-    G --> H[Mesaj Göster]
-    H --> I[Bitir]
-```
+- **Aşama 1:** Analiz ve Planlama
+- **Aşama 2:** Tasarım
+- **Aşama 3:** Geliştirme
+- **Aşama 4:** Test ve Doğrulama
+- **Aşama 5:** Dağıtım ve Bakım
 
-### Randevu Oluşturma Akış Şeması
-```mermaid
-graph TD;
-    A[Başla] --> B[Hasta ID Al]
-    B --> C[Hasta Bul]
-    C --> D[Randevu Düğümü Oluştur]
-    D --> E[Kuyruğa Ekle]
-    E --> F[HL7 Mesajı Oluştur]
-    F --> G[Mesaj Göster]
-    G --> H[Bitir]
-```
+## Sonuç
+Bu bölümde, projenin genel sonuçları ve elde edilen başarılar özetlenir.
+
+- **Başarı 1:** Açıklama
+- **Başarı 2:** Açıklama
+- **Başarı 3:** Açıklama
