@@ -235,19 +235,3 @@ graph TD;
     A[HL7 Mesajını Dosyaya Kaydetme] --> B[HL7 Mesajını Dosyaya Kaydet]
     B --> C[Bitir]
 ```
-
-## Geliştirme Süreci
-Bu bölümde, projenin geliştirme aşamaları ve süreçleri hakkında bilgi verilir.
-
-- **Aşama 1:** Analiz ve Planlama
-- **Aşama 2:** Tasarım
-- **Aşama 3:** Geliştirme
-- **Aşama 4:** Test ve Doğrulama
-- **Aşama 5:** Dağıtım ve Bakım
-
-## Sonuç
-Bu bölümde, projenin genel sonuçları ve elde edilen başarılar özetlenir.
-
-- **Başarı 1:** Açıklama
-- **Başarı 2:** Açıklama
-- **Başarı 3:** Açıklama
